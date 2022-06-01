@@ -7,6 +7,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "distro"
+version = "1.7.0"
+description = "Distro - an OS platform information API"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "sentry-sdk"
 version = "1.5.12"
 description = "Python client for Sentry (https://sentry.io)"
@@ -52,12 +60,16 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "5039a740aec01d11e41cf123ece2090b5d286deac5fcef0730225211dbe287d9"
+content-hash = "fcc37f34cd42a0c31d7508e1a09d040f9b076ac20962c18479a230010c3b527c"
 
 [metadata.files]
 certifi = [
     {file = "certifi-2022.5.18.1-py3-none-any.whl", hash = "sha256:f1d53542ee8cbedbe2118b5686372fb33c297fcd6379b050cca0ef13a597382a"},
     {file = "certifi-2022.5.18.1.tar.gz", hash = "sha256:9c5705e395cd70084351dd8ad5c41e65655e08ce46f2ec9cf6c2c08390f71eb7"},
+]
+distro = [
+    {file = "distro-1.7.0-py3-none-any.whl", hash = "sha256:d596311d707e692c2160c37807f83e3820c5d539d5a83e87cfb6babd8ba3a06b"},
+    {file = "distro-1.7.0.tar.gz", hash = "sha256:151aeccf60c216402932b52e40ee477a939f8d58898927378a02abbe852c1c39"},
 ]
 sentry-sdk = [
     {file = "sentry-sdk-1.5.12.tar.gz", hash = "sha256:259535ba66933eacf85ab46524188c84dcb4c39f40348455ce15e2c0aca68863"},

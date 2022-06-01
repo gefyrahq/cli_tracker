@@ -31,14 +31,33 @@ class CliTracker:
                 "arch": mac[2]
             })
         elif os_name == "Linux":
-            desktop = platform.freedesktop_os_release()
+            py_ver = platform.python_version_tuple()
+            if (int(py_ver[0]) >= 3 and int(py_ver[1]) >= 10):
+                name = platform.freedesktop_os_release()['ID']
+                try:
+                    version = platform.freedesktop_os_release()['VERSION_ID']
+                except:
+                    # Most likely this distribution is a rolling release
+                    # distribution and has no version information
+                    version = None
+                arch = platform.machine()
+            else:
+                # This is some support for python versions below 3.10
+                import distro
+                name = distro.id()
+                version = distro.version()
+                arch = platform.machine()
             sentry_sdk.set_context("os", {
-                "name": "macOS",
-                "version": mac[0], # TODO Georg
-                "arch": mac[2]
+                "name": name,
+                "version": version,
+                "arch": arch
             })
         elif os_name == "Windows":
-            pass
+            sentry_sdk.set_context("os", {
+                "name": "Windows",
+                "version": platform.release(),
+                "arch": platform.machine()
+            })
         else:
             pass
         sentry_sdk.set_context("os", {
