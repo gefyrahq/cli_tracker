@@ -1,21 +1,23 @@
 import atexit
 import platform
 import os
+import time
 from pprint import pprint
 
 import sentry_sdk
 
-dsn = "https://078bcf96639e44168d60d2918771d345@o1254779.ingest.sentry.io/6422893"
-
 class CliTracker:
     def __init__(self, application, dsn, release):
+        # The server name may contain some confidential information
+        # since we do not need those scrape it from the Sentry object.
         self.sentry = sentry_sdk.init(
             dsn=dsn,
             release=release,
             traces_sample_rate=0,
             server_name=""
         )
-    
+        self.execution_time = 0
+
         with sentry_sdk.push_scope() as scope:
             scope.set_tag("my-tag", application)
             scope.set_extra("ExecutionTime", 20)
@@ -71,11 +73,26 @@ class CliTracker:
         })
         atexit.register(self.onExit)
 
-    def onExit(self):
-        sentry_sdk.set_context("cli", {
-            "execution_time": 20,
+    def onExit(self) -> None:
+        if hasattr(self, "_start_time"):
+            self.stop_timer()
+            sentry_sdk.set_context("cli", {
+                "execution_time": self.excution_time,
+            })
+
+    def add_information(self, key: str, value: str, group: str = '') -> None:
+        if not group:
+            group = "additional_information"
+        sentry_sdk.set_context(group, {
+            key: value,
         })
-        
+
+    def start_timer(self) -> None:
+        self._start_time = time.perf_counter()
+
+    def stop_timer(self) -> None:
+        self.execution_time = self.exection_time + time.perf_counter() - self._start_time
 
 
+dsn = "https://078bcf96639e44168d60d2918771d345@o1254779.ingest.sentry.io/6422893"
 tracker = CliTracker("TestApp", dsn, "0.0.1")
