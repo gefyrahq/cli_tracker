@@ -1,13 +1,13 @@
 import atexit
 import platform
 import os
+import sys
 import time
-from pprint import pprint
 
 import sentry_sdk
 
 class CliTracker:
-    def __init__(self, application, dsn, release):
+    def __init__(self, application, dsn, release, timer=True):
         # The server name may contain some confidential information
         # since we do not need those scrape it from the Sentry object.
         self.sentry = sentry_sdk.init(
@@ -16,14 +16,13 @@ class CliTracker:
             traces_sample_rate=0,
             server_name=""
         )
-        self.execution_time = 0
-
-        with sentry_sdk.push_scope() as scope:
-            scope.set_tag("my-tag", application)
-            scope.set_extra("ExecutionTime", 20)
-            self.scope = scope
+        self.opted_out = False
+        if timer:
+            self.execution_time = 0
+            self.start_timer()
 
         self._set_os_context()
+        self._parse_arguments()
 
         sentry_sdk.set_context("cli", {
             "name": application,
@@ -32,11 +31,20 @@ class CliTracker:
         atexit.register(self.onExit)
 
     def onExit(self) -> None:
+        if self.opted_out:
+            return
         if hasattr(self, "_start_time"):
             self.stop_timer()
+            print(self.execution_time)
             sentry_sdk.set_context("cli", {
-                "execution_time": self.excution_time,
+                "execution_time": self.execution_time,
             })
+        sentry_sdk.capture_message("command executed")
+
+    def _parse_arguments(self):
+        args = sys.argv
+        if len(args) > 1:
+            sentry_sdk.set_tag("command", args[1])
 
     def _set_os_context(self):
         uname = os.uname()
@@ -89,12 +97,24 @@ class CliTracker:
             key: value,
         })
 
+    def report_opt_out(self):
+        sentry_sdk.set_context("opt_out", {
+            "opt_out": True
+        })
+        sentry_sdk.capture_message("opt_out")
+        self.opted_out = True
+
+
+    def report_opt_in(self):
+        sentry_sdk.set_context("opt_out", {
+            "opt_in": True
+        })
+        sentry_sdk.capture_message("opt_in")
+        self.opted_out = False
+
     def start_timer(self) -> None:
         self._start_time = time.perf_counter()
 
     def stop_timer(self) -> None:
-        self.execution_time = self.exection_time + time.perf_counter() - self._start_time
+        self.execution_time = self.execution_time + time.perf_counter() - self._start_time
 
-
-dsn = "https://078bcf96639e44168d60d2918771d345@o1254779.ingest.sentry.io/6422893"
-tracker = CliTracker("TestApp", dsn, "0.0.1")
