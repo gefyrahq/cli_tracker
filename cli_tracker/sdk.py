@@ -23,6 +23,22 @@ class CliTracker:
             scope.set_extra("ExecutionTime", 20)
             self.scope = scope
 
+        self._set_os_context()
+
+        sentry_sdk.set_context("cli", {
+            "name": application,
+            "version": release,
+        })
+        atexit.register(self.onExit)
+
+    def onExit(self) -> None:
+        if hasattr(self, "_start_time"):
+            self.stop_timer()
+            sentry_sdk.set_context("cli", {
+                "execution_time": self.excution_time,
+            })
+
+    def _set_os_context(self):
         uname = os.uname()
         os_name = platform.uname().system
         if os_name == "Darwin":
@@ -61,23 +77,9 @@ class CliTracker:
                 "arch": platform.machine()
             })
         else:
-            pass
-        sentry_sdk.set_context("os", {
-            "name": uname.sysname,
-            "version": uname.release,
-        })
-
-        sentry_sdk.set_context("cli", {
-            "name": application,
-            "version": release,
-        })
-        atexit.register(self.onExit)
-
-    def onExit(self) -> None:
-        if hasattr(self, "_start_time"):
-            self.stop_timer()
-            sentry_sdk.set_context("cli", {
-                "execution_time": self.excution_time,
+            sentry_sdk.set_context("os", {
+                "name": uname.sysname,
+                "version": uname.release,
             })
 
     def add_information(self, key: str, value: str, group: str = '') -> None:
