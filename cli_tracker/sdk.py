@@ -14,7 +14,8 @@ class CliTracker:
             dsn=dsn,
             release=release,
             traces_sample_rate=0,
-            server_name=""
+            server_name="",
+            shutdown_timeout=0
         )
         self.opted_out = False
         if timer:
@@ -35,7 +36,6 @@ class CliTracker:
             return
         if hasattr(self, "_start_time"):
             self.stop_timer()
-            print(self.execution_time)
             sentry_sdk.set_context("cli", {
                 "execution_time": self.execution_time,
             })
