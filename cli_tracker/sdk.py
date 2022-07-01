@@ -5,6 +5,15 @@ import sys
 import time
 
 import sentry_sdk
+from sentry_sdk.integrations.excepthook import Excepthook
+from sentry_sdk.integrations.dedupe import DedupeIntegration
+from sentry_sdk.integrations.stdlib import StdlibIntegration
+from sentry_sdk.integrations.modules import ModulesIntegration
+from sentry_sdk.integrations.argv import ArgvIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+
+from cli_tracker.integrations.atexit import SilentAtexitIntegration
+
 
 class CliTracker:
     def __init__(self, application, dsn, release, timer=True):
@@ -15,7 +24,16 @@ class CliTracker:
             release=release,
             traces_sample_rate=0,
             server_name="",
-            shutdown_timeout=0
+            default_integrations=False,
+            integrations=[
+                SilentAtexitIntegration,
+                Excepthook,
+                DedupeIntegration,
+                StdlibIntegration,
+                ModulesIntegration,
+                ArgvIntegration,
+                LoggingIntegration
+            ]
         )
         self.opted_out = False
         if timer:
@@ -40,7 +58,7 @@ class CliTracker:
                 "execution_time": self.execution_time,
             })
         sentry_sdk.capture_message("command executed")
-        sentry_sdk.flush()
+        sentry_sdk.client.close()
 
     def _parse_arguments(self):
         args = sys.argv
