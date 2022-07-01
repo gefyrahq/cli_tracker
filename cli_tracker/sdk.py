@@ -40,6 +40,7 @@ class CliTracker:
                 "execution_time": self.execution_time,
             })
         sentry_sdk.capture_message("command executed")
+        sentry_sdk.flush()
 
     def _parse_arguments(self):
         args = sys.argv
