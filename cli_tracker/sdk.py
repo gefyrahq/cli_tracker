@@ -5,7 +5,7 @@ import sys
 import time
 
 import sentry_sdk
-from sentry_sdk.integrations.excepthook import Excepthook
+from sentry_sdk.integrations.excepthook import ExcepthookIntegration
 from sentry_sdk.integrations.dedupe import DedupeIntegration
 from sentry_sdk.integrations.stdlib import StdlibIntegration
 from sentry_sdk.integrations.modules import ModulesIntegration
@@ -27,7 +27,7 @@ class CliTracker:
             default_integrations=False,
             integrations=[
                 SilentAtexitIntegration,
-                Excepthook,
+                ExcepthookIntegration,
                 DedupeIntegration,
                 StdlibIntegration,
                 ModulesIntegration,
