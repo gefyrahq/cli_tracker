@@ -52,6 +52,8 @@ class CliTracker:
 
     def onExit(self) -> None:
         if self.opted_out:
+            client = Hub.current.client
+            client.close()
             return
         if hasattr(self, "_start_time"):
             self.stop_timer()
