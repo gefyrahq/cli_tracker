@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cli_tracker"
-version = "0.2.7"
+version = "0.2.8"
 description = ""
 authors = ["Robert Stein <robert@blueshoe.de>", "Georg Krause <georg@blueshoe.de>"]
 readme = "README.md"
