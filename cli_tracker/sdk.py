@@ -70,7 +70,10 @@ class CliTracker:
             sentry_sdk.set_tag("command", args[1])
 
     def _set_os_context(self):
-        uname = os.uname()
+        try:
+            uname = os.uname()
+        except AttributeError:
+            uname = None
         os_name = platform.uname().system
         if os_name == "Darwin":
             mac = platform.mac_ver()
@@ -108,10 +111,16 @@ class CliTracker:
                 "arch": platform.machine()
             })
         else:
-            sentry_sdk.set_context("os", {
-                "name": uname.sysname,
-                "version": uname.release,
-            })
+            if uname:
+                sentry_sdk.set_context("os", {
+                    "name": uname.sysname,
+                    "version": uname.release,
+                })
+            else:
+                sentry_sdk.set_context("os", {
+                    "name": os_name,
+                    "version": platform.uname().release
+                })
 
     def add_information(self, key: str, value: str, group: str = '') -> None:
         if not group:
