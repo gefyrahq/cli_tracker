@@ -17,7 +17,16 @@ from cli_tracker.integrations.atexit import SilentAtexitIntegration
 
 
 class CliTracker:
-    def __init__(self, application, dsn, release, timer=True):
+    def __init__(self, application, dsn, release, timer=True, fingerprint=""):
+        """CLI Tracker class. Tracks stuff into a Sentry project.
+
+        Args:
+            application (_type_): name of the application to track
+            dsn (_type_): Sentry DSN
+            release (_type_): version / release name
+            timer (bool, optional): whether to time execution. Defaults to True.
+            fingerprint (str, optional): fingerprint to send with events. Defaults to "".
+        """
         # The server name may contain some confidential information
         # since we do not need those scrape it from the Sentry object.
         self.sentry = sentry_sdk.init(
@@ -43,6 +52,12 @@ class CliTracker:
 
         self._set_os_context()
         self._parse_arguments()
+
+
+        if fingerprint:
+            sentry_sdk.set_context("fingerprint", {
+                "id": fingerprint
+            })
 
         sentry_sdk.set_context("cli", {
             "name": application,
