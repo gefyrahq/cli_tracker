@@ -55,9 +55,7 @@ class CliTracker:
 
 
         if fingerprint:
-            sentry_sdk.set_context("fingerprint", {
-                "id": fingerprint
-            })
+            sentry_sdk.set_tag("fingerprint", fingerprint)
 
         sentry_sdk.set_context("cli", {
             "name": application,
