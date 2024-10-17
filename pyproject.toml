@@ -1,9 +1,21 @@
 [tool.poetry]
 name = "cli_tracker"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 authors = ["Robert Stein <robert@blueshoe.de>", "Georg Krause <georg@blueshoe.de>"]
 readme = "README.md"
+homepage = "https://gefyra.dev"
+repository = "https://github.com/gefyrahq/gefyra"
+documentation = "https://gefyra.dev"
+keywords = [
+    "CLI",
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
