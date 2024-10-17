@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "cli_tracker"
-version = "0.3.3"
+version = "0.3.4"
 description = ""
 authors = ["Robert Stein <robert@blueshoe.de>", "Georg Krause <georg@blueshoe.de>"]
 readme = "README.md"
 homepage = "https://gefyra.dev"
-repository = "https://github.com/gefyrahq/gefyra"
+repository = "https://github.com/gefyrahq/cli_tracker/"
 documentation = "https://gefyra.dev"
 keywords = [
     "CLI",
