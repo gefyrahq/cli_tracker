@@ -5,7 +5,6 @@ import sys
 import time
 
 import sentry_sdk
-from sentry_sdk import Hub
 from sentry_sdk.integrations.excepthook import ExcepthookIntegration
 from sentry_sdk.integrations.dedupe import DedupeIntegration
 from sentry_sdk.integrations.stdlib import StdlibIntegration
@@ -65,8 +64,9 @@ class CliTracker:
 
     def onExit(self) -> None:
         if self.opted_out:
-            client = Hub.current.client
-            client.close()
+            client = sentry_sdk.api.get_client()
+            if client:
+                client.close()
             return
         if hasattr(self, "_start_time"):
             self.stop_timer()
@@ -74,8 +74,9 @@ class CliTracker:
                 "execution_time": self.execution_time,
             })
         sentry_sdk.capture_message("command executed")
-        client = Hub.current.client
-        client.close()
+        client = sentry_sdk.api.get_client()
+        if client:
+            client.close()
 
     def _parse_arguments(self):
         args = sys.argv
